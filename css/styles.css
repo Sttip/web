@@ -38,7 +38,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     font-size: 70px;
-    background: white;
+    background: orange;
     padding: 0 25px;
     z-index: 2;
     border: 3px solid #FF5722;
