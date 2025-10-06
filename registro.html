@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natural Power - Registro</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1>Registrar Usuario</h1>
+            <form id="registroForm">
+                <div class="form-group">
+                    <label for="regEmail">Usuario</label>
+                    <input type="email" id="regEmail" name="email" placeholder="amalgoscampie.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" name="password" placeholder="Clave2025" required>
+                    <small>La contraseña debe tener al menos 8 caracteres, una mayúscula y números</small>
+                </div>
+                
+                <button type="submit" class="btn">Registrar</button>
+            </form>
+            
+            <div class="links">
+                <a href="index.html">¿Ya tienes cuenta? Inicia sesión</a>
+            </div>
+            
+            <!-- Mensajes de error -->
+            <div id="message" class="message hidden"></div>
+        </div>
+    </div>
+    
+    <script src="js/script.js"></script>
+</body>
+</html>
