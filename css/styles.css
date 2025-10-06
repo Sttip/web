@@ -21,20 +21,22 @@ body {
 }
 
 .login-box {
-    background: white;
-    padding: 30px 30px 30px 30px;
-    border-radius: 15px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    border: 3px solid #FF5722;
     position: relative;
-    overflow: hidden;
-    margin-top: 80px;
+    padding-top: 60px;  /* ⬅️ Espacio arriba para el icono */
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 300px;
+    height: 400px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
+
 
 .login-box::before {
     content: "🥤";
     position: absolute;
-    top: -40px;
+    top: 0px;  /* ⬅️ Esto lo coloca justo en el nuevo espacio arriba */
     left: 50%;
     transform: translateX(-50%);
     font-size: 70px;
@@ -49,6 +51,7 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 
 h1 {
     text-align: center;
