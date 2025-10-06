@@ -1,0 +1,193 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="5" fill="%23FFFFFF" opacity="0.2"/><circle cx="80" cy="40" r="7" fill="%23FFFFFF" opacity="0.2"/><circle cx="40" cy="80" r="6" fill="%23FFFFFF" opacity="0.2"/></svg>');
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.login-box {
+    background: white;
+    padding: 40px 30px 30px 30px;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 3px solid #FF9800;
+    position: relative;
+    overflow: hidden;
+    margin-top: 30px;
+}
+
+.login-box::before {
+    content: "🍹";
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 60px;
+    background: white;
+    padding: 0 20px;
+    z-index: 2;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2E7D32;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #388E3C;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #C8E6C9;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s;
+    background: #F1F8E9;
+}
+
+input:focus {
+    outline: none;
+    border-color: #FF9800;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+input::placeholder {
+    color: #81C784;
+}
+
+small {
+    color: #78909C;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+    font-style: italic;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 152, 0, 0.3);
+}
+
+.links {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #E8F5E8;
+}
+
+.links a {
+    color: #FF9800;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.links a:hover {
+    color: #F57C00;
+    text-decoration: underline;
+}
+
+.message {
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    border: 2px solid;
+}
+
+.message.error {
+    background: #FFEBEE;
+    color: #C62828;
+    border-color: #EF9A9A;
+}
+
+.message.success {
+    background: #E8F5E8;
+    color: #2E7D32;
+    border-color: #A5D6A7;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Estilos específicos para el área privada */
+.dashboard-content {
+    text-align: center;
+}
+
+.dashboard-content h2 {
+    color: #FF9800;
+    margin-bottom: 15px;
+}
+
+.dashboard-content p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.logout-btn {
+    background: linear-gradient(135deg, #F44336 0%, #D32F2F 100%) !important;
+}
+
+.logout-btn:hover {
+    box-shadow: 0 10px 20px rgba(244, 67, 54, 0.3) !important;
+}
+
+/* Efectos de frutas decorativas */
+.fruit-decoration {
+    position: fixed;
+    font-size: 30px;
+    opacity: 0.1;
+    z-index: -1;
+}
+
+.fruit-1 { top: 10%; left: 10%; }
+.fruit-2 { top: 20%; right: 15%; }
+.fruit-3 { bottom: 15%; left: 20%; }
+.fruit-4 { bottom: 25%; right: 10%; }
