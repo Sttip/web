@@ -22,13 +22,13 @@ body {
 
 .login-box {
     background: white;
-    padding: 70px 30px 30px 30px;
+    padding: 30px 30px 30px 30px;
     border-radius: 15px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     border: 3px solid #FF5722;
     position: relative;
     overflow: hidden;
-    margin-top: 40px;
+    margin-top: 80px;
 }
 
 .login-box::before {
