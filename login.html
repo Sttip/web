@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Iniciar Sesión</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="js/auth.js" defer></script>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav class="navbar">
+        <div class="logo">Smoothies Naturales</div>
+        <ul class="nav-links">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="productos.html">Menú</a></li>
+          <li><a href="login.html">Iniciar Sesión</a></li>
+          <li><a href="carrito.html">🛒 Carrito</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Auth -->
+  <section class="auth">
+    <div class="auth-card">
+      <h2 class="auth-title">Iniciar Sesión</h2>
+
+      <form id="form-login" class="auth-form" novalidate>
+        <div class="form-field">
+          <label for="email">Correo</label>
+          <input type="email" id="email" name="email" placeholder="tu@correo.com" required />
+        </div>
+
+        <div class="form-field">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" name="password" placeholder="Tu contraseña" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-submit">Entrar</button>
+      </form>
+
+      <p class="auth-alt">
+        ¿No tienes cuenta?
+        <a href="registrar.html">Regístrate</a>
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Smoothies Naturales. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('password').value.trim();
+
+      if (!email || !pass) {
+        alert('Completa correo y contraseña.');
+        return;
+      }
+
+      const { ok, error, user } = await Auth.login({ email, password: pass });
+      if (!ok) {
+        alert(error || 'No fue posible iniciar sesión.');
+        return;
+      }
+
+      alert('¡Bienvenido, ' + user.email + '!');
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
