@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registrarse</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="js/auth.js" defer></script>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav class="navbar">
+        <div class="logo">Smoothies Naturales</div>
+        <ul class="nav-links">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="productos.html">Menú</a></li>
+          <li><a href="login.html">Iniciar Sesión</a></li>
+          <li><a href="carrito.html">🛒 Carrito</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Auth -->
+  <section class="auth">
+    <div class="auth-card">
+      <h2 class="auth-title">Crear Cuenta</h2>
+
+      <form id="form-register" class="auth-form" novalidate>
+        <div class="form-field">
+          <label for="reg-email">Correo</label>
+          <input type="email" id="reg-email" name="email" placeholder="tu@correo.com" required />
+        </div>
+
+        <div class="form-field">
+          <label for="reg-pass">Contraseña</label>
+          <input type="password" id="reg-pass" name="password" placeholder="Crea una contraseña" required minlength="6"/>
+        </div>
+
+        <div class="form-field">
+          <label for="reg-pass2">Confirmar contraseña</label>
+          <input type="password" id="reg-pass2" name="password2" placeholder="Repite la contraseña" required minlength="6"/>
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-submit">Registrarme</button>
+      </form>
+
+      <p class="auth-alt">
+        ¿Ya tienes cuenta?
+        <a href="login.html">Inicia sesión</a>
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Smoothies Naturales. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('form-register').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('reg-email').value.trim();
+      const pass1 = document.getElementById('reg-pass').value.trim();
+      const pass2 = document.getElementById('reg-pass2').value.trim();
+
+      if (!email || !pass1 || !pass2) {
+        alert('Completa todos los campos.');
+        return;
+      }
+      if (pass1.length < 6) {
+        alert('La contraseña debe tener al menos 6 caracteres.');
+        return;
+      }
+      if (pass1 !== pass2) {
+        alert('Las contraseñas no coinciden.');
+        return;
+      }
+
+      const { ok, error } = await Auth.register({ email, password: pass1 });
+      if (!ok) {
+        alert(error || 'No se pudo registrar.');
+        return;
+      }
+
+      alert('Registro exitoso. Ahora inicia sesión.');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>
