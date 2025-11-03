@@ -1,4 +1,6 @@
-/* Estilos generales */
+/* =========================================================
+   RESET Y BASE
+========================================================= */
 * {
   margin: 0;
   padding: 0;
@@ -18,7 +20,9 @@ body {
   padding: 0 20px;
 }
 
-/* Header y navegación */
+/* =========================================================
+   HEADER Y NAVEGACIÓN
+========================================================= */
 header {
   background-color: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -60,7 +64,9 @@ header {
   color: #4CAF50;
 }
 
-/* Hero section */
+/* =========================================================
+   HERO
+========================================================= */
 .hero {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
               url('https://images.unsplash.com/photo-1638176066666-ffb0f2d4c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
@@ -98,44 +104,72 @@ header {
   background-color: #45a049;
 }
 
-/* Sección de smoothies */
+/* =========================================================
+   CATÁLOGO Y PRODUCTOS
+========================================================= */
 .smoothies-section {
   padding: 60px 0;
 }
 
 .section-title {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 40px;
   font-size: 36px;
   color: #333;
 }
 
+/* --- Buscador --- */
+.catalog-toolbar {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.catalog-toolbar input[type="search"] {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.6rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.catalog-toolbar input[type="search"]:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
+}
+
+/* --- Grid --- */
 .smoothies-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
 }
 
+/* --- Tarjetas --- */
 .smoothie-card {
   background-color: white;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .smoothie-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-6px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
 }
 
 .smoothie-img {
-  height: 200px;
+  height: 180px;
   background-size: cover;
   background-position: center;
 }
 
 .smoothie-info {
   padding: 20px;
+  text-align: center;
 }
 
 .smoothie-name {
@@ -172,38 +206,9 @@ header {
   background-color: #45a049;
 }
 
-/* Footer */
-footer {
-  background-color: #333;
-  color: white;
-  padding: 40px 0;
-  margin-top: 60px;
-}
-
-footer p {
-  text-align: center;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-  }
-  .nav-links {
-    margin-top: 20px;
-  }
-  .nav-links li {
-    margin: 0 10px;
-  }
-  .hero h1 {
-    font-size: 36px;
-  }
-  .hero p {
-    font-size: 18px;
-  }
-}
-
-/* ----- Carrito ----- */
+/* =========================================================
+   CARRITO
+========================================================= */
 .cart-list {
   display: grid;
   gap: 16px;
@@ -258,9 +263,7 @@ footer p {
   cursor: pointer;
 }
 
-.cart-remove:hover {
-  opacity: 0.9;
-}
+.cart-remove:hover { opacity: 0.9; }
 
 .cart-footer {
   margin-top: 16px;
@@ -280,12 +283,13 @@ footer p {
   cursor: pointer;
 }
 
-.cart-actions button:hover {
-  opacity: 0.95;
-}
-/* ----- Auth (Login / Registro) ----- */
+.cart-actions button:hover { opacity: 0.95; }
+
+/* =========================================================
+   AUTH (LOGIN / REGISTRO)
+========================================================= */
 .auth {
-  min-height: calc(100vh - 160px); /* resta header+footer aproximados */
+  min-height: calc(100vh - 160px);
   display: grid;
   place-items: center;
   padding: 40px 20px;
@@ -346,9 +350,7 @@ footer p {
   cursor: pointer;
 }
 
-.auth-submit:hover {
-  background: #45a049;
-}
+.auth-submit:hover { background: #45a049; }
 
 .auth-alt {
   text-align: center;
@@ -360,7 +362,129 @@ footer p {
   text-decoration: none;
 }
 
-.auth-alt a:hover {
-  text-decoration: underline;
+.auth-alt a:hover { text-decoration: underline; }
+
+/* =========================================================
+   MODAL DETALLE DE PRODUCTO
+========================================================= */
+#product-detail {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 12, 12, 0.88);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+}
+#product-detail.pd-hidden { display: none; }
+
+#pd-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  font-size: 20px;
+  border: 0; background: transparent;
+  color: #fff; cursor: pointer;
 }
 
+.pd-card {
+  width: min(920px, 92vw);
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 24px;
+  background: #111;
+  color: #fff;
+  border-radius: 14px;
+  padding: 24px;
+}
+@media (max-width: 780px) {
+  .pd-card { grid-template-columns: 1fr; }
+}
+
+.pd-image-wrap {
+  display: grid;
+  place-items: center;
+  background: #1a1a1a;
+  border-radius: 12px;
+  min-height: 280px;
+  padding: 24px;
+}
+
+.pd-image {
+  width: 220px;
+  height: 220px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.25);
+}
+
+.pd-info h2 { margin: 0 0 8px; }
+.pd-info #pd-price { font-weight: 700; margin: 0 0 12px; }
+.pd-desc { opacity: .9; line-height: 1.55; }
+#pd-add { margin-top: 16px; }
+
+/* --- Meta info --- */
+.pd-meta { display:flex; gap:12px; align-items:center; margin:4px 0 10px; }
+.pd-stock-badge { font-size:.9rem; padding:2px 8px; border-radius:999px; background:#1f2937; }
+.pd-stock--ok { background:#14532d; }
+.pd-stock--no { background:#7f1d1d; }
+
+/* --- Tabs y paneles --- */
+.pd-tabs { display:flex; gap:8px; margin:14px 0 6px; }
+.pd-tab {
+  border:0;
+  background:#1a1a1a;
+  color:#fff;
+  padding:8px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:background .2s;
+}
+.pd-tab:hover { background:#222; }
+.pd-tab.is-active { outline:2px solid #4CAF50; }
+
+.pd-panels {
+  background:#1a1a1a;
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:14px;
+}
+.pd-panel.is-hidden { display:none; }
+
+.pd-list { margin:0; padding-left:18px; }
+.pd-list li { margin:4px 0; }
+
+.pd-table { width:100%; border-collapse:collapse; }
+.pd-table td {
+  padding:6px 4px;
+  border-bottom:1px solid #2b2b2b;
+}
+.pd-table td:first-child { opacity:.9; }
+
+/* =========================================================
+   FOOTER
+========================================================= */
+footer {
+  background-color: #333;
+  color: white;
+  padding: 40px 0;
+  margin-top: 60px;
+}
+
+footer p {
+  text-align: center;
+}
+
+/* =========================================================
+   RESPONSIVE GENERAL
+========================================================= */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+  }
+  .nav-links {
+    margin-top: 20px;
+  }
+  .nav-links li {
+    margin: 0 10px;
+  }
+  .hero h1 { font-size: 36px; }
+  .hero p { font-size: 18px; }
+}
