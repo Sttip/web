@@ -14,7 +14,7 @@
         <div class="logo">Smoothies Naturales</div>
         <ul class="nav-links">
           <li><a href="index.html">Inicio</a></li>
-          <li><a href="productos.html">Menú</a></li>
+          <li><a href="productos.html" aria-current="page">Menú</a></li>
           <li><a href="#">Sobre Nosotros</a></li>
           <li><a href="#">Contacto</a></li>
           <li><a href="carrito.html">🛒 Carrito</a></li>
@@ -27,7 +27,19 @@
   <section class="smoothies-section">
     <div class="container">
       <h2 class="section-title">Nuestros Smoothies</h2>
-      <div class="smoothies-grid">
+
+      <!-- Toolbar de catálogo: buscador (PASO 2) -->
+      <div class="catalog-toolbar">
+        <input
+          id="search"
+          type="search"
+          placeholder="Buscar smoothies por nombre o descripción..."
+          aria-label="Buscar smoothies"
+        />
+      </div>
+
+      <!-- Grid (ahora con id para el paso 3). Conserva tus tarjetas estáticas -->
+      <div class="smoothies-grid" id="smoothies-grid">
 
         <!-- Smoothie 1 -->
         <div class="smoothie-card">
@@ -88,9 +100,48 @@
     </div>
   </footer>
 
-  <script src="js/main.js"></script>
-  <script src="js/main.js" defer></script>
+  <!-- Modal: Detalle de producto -->
+  <div id="product-detail" class="pd-hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <button id="pd-close" aria-label="Cerrar">✕</button>
 
+    <div class="pd-card">
+      <div class="pd-image-wrap">
+        <div id="pd-image" class="pd-image"></div>
+      </div>
+
+      <div class="pd-info">
+        <h2 id="pd-name"></h2>
+        <div class="pd-meta">
+          <span id="pd-price" class="pd-price"></span>
+          <span id="pd-stock" class="pd-stock-badge"></span>
+        </div>
+        <p id="pd-desc" class="pd-desc"></p>
+
+        <div class="pd-tabs" role="tablist" aria-label="Información del producto">
+          <button class="pd-tab is-active" data-tab="ingredientes" role="tab" aria-selected="true">Ingredientes</button>
+          <button class="pd-tab" data-tab="beneficios" role="tab" aria-selected="false">Beneficios</button>
+          <button class="pd-tab" data-tab="nutricion" role="tab" aria-selected="false">Información Nutricional</button>
+        </div>
+
+        <div class="pd-panels">
+          <div class="pd-panel" data-panel="ingredientes" role="tabpanel">
+            <ul id="pd-ingredientes" class="pd-list"></ul>
+          </div>
+          <div class="pd-panel is-hidden" data-panel="beneficios" role="tabpanel">
+            <ul id="pd-beneficios" class="pd-list"></ul>
+          </div>
+          <div class="pd-panel is-hidden" data-panel="nutricion" role="tabpanel">
+            <table id="pd-nutricion" class="pd-table"></table>
+          </div>
+        </div>
+
+        <button id="pd-add" class="add-to-cart">Agregar al Carrito</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/main.js" defer></script>
 </body>
 </html>
 
