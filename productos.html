@@ -5,16 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Nuestros Smoothies</title>
   <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body { background:#f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#333; margin:0; }
+    header { background:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    .navbar { display:flex; justify-content:space-between; align-items:center; padding:1rem 2rem; }
+    .logo { font-weight:700; font-size:1.3rem; color:#2e7d32; }
+    .nav-links { list-style:none; display:flex; gap:1.5rem; margin:0; padding:0; }
+    .nav-links a { text-decoration:none; color:#333; font-weight:500; }
+    .nav-links a.active { color:#2e7d32; font-weight:600; }
+
+    .smoothies-section { padding:3rem 2rem; text-align:center; }
+    .section-title { font-size:2rem; font-weight:800; margin-bottom:1rem; color:#222; }
+    .catalog-toolbar { margin:1rem 0 2rem; text-align:center; }
+    #search { width:60%; max-width:400px; padding:10px; border-radius:8px; border:1px solid #ccc; outline:none; }
+    #search:focus { border-color:#2e7d32; box-shadow:0 0 0 1px #2e7d32; }
+
+    .smoothies-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.8rem; justify-items:center; }
+    .smoothie-card { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); overflow:hidden; width:100%; max-width:300px; text-align:left; transition:transform .2s ease; }
+    .smoothie-card:hover { transform: translateY(-5px); }
+
+    .smoothie-color { height:120px; cursor:pointer; }
+    .smoothie-info { padding:1.2rem; }
+    .smoothie-name { font-size:1.2rem; font-weight:800; margin:0 0 .5rem 0; cursor:pointer; }
+    .smoothie-desc { font-size:.95rem; color:#555; margin-bottom:1rem; }
+    .smoothie-price { font-weight:800; color:#2e7d32; margin-bottom:.8rem; }
+    .add-to-cart { background:#2e7d32; color:#fff; border:none; border-radius:8px; padding:10px; width:100%; font-weight:700; cursor:pointer; transition:background .2s ease; }
+    .add-to-cart:hover { background:#256b29; }
+    .add-to-cart[disabled]{ background:#c2c2c2; cursor:not-allowed; color:#555; }
+
+    footer { background:#2b2b2b; color:#fff; text-align:center; padding:1rem 0; font-size:.9rem; margin-top:3rem; }
+
+    /* Modal */
+    .modal{ position:fixed; inset:0; background:rgba(0,0,0,.75); display:flex; justify-content:center; align-items:center; z-index:999; backdrop-filter:blur(4px); }
+    .modal.hidden{ display:none; }
+    .modal-content{ background:#1f1f1f; color:#fff; display:flex; flex-direction:row; border-radius:16px; padding:2rem; max-width:900px; width:90%; position:relative; box-shadow:0 4px 30px rgba(0,0,0,.5); }
+    .modal-close{ position:absolute; top:1rem; right:1.5rem; background:none; border:none; color:#fff; font-size:1.8rem; cursor:pointer; }
+    .modal-left{ flex:1 1 250px; display:flex; justify-content:center; align-items:center; padding-right:1rem; }
+    .modal-right{ flex:2 1 400px; display:flex; flex-direction:column; justify-content:space-between; }
+    .modal-img{ width:230px; height:230px; border-radius:20px; box-shadow:0 0 20px rgba(0,0,0,.4); }
+    .modal-right h2{ font-size:1.8rem; margin:.2rem 0 .3rem; font-weight:900; }
+    #modal-stock{ font-size:.9rem; padding:3px 10px; border-radius:8px; margin-left:8px; }
+    .tabs{ display:flex; gap:.8rem; margin:1rem 0; }
+    .tab{ background:#2c2c2c; border:1px solid #333; padding:.5rem 1rem; border-radius:8px; cursor:pointer; color:#ddd; transition:.2s; }
+    .tab:hover{ background:#383838; }
+    .tab.active{ border-color:#22c55e; color:#22c55e; background:#242424; }
+    .tab-content{ background:#2b2b2b; padding:1rem; border-radius:8px; margin-bottom:1rem; font-size:.95rem; color:#e5e5e5; }
+    #modal-add{ width:100%; padding:12px; font-size:1rem; }
+
+    /* Toast */
+    .toast{ position:fixed; right:20px; bottom:20px; background:#22c55e; color:#fff; padding:10px 16px; border-radius:10px; font-weight:700; box-shadow:0 10px 25px rgba(0,0,0,.25); animation:toast 2s ease forwards; z-index:1000;}
+    .toast.error{ background:#dc2626; }
+    @keyframes toast{ 0%{opacity:0; transform:translateY(10px)} 10%,90%{opacity:1; transform:translateY(0)} 100%{opacity:0; transform:translateY(10px)} }
+  </style>
 </head>
 <body>
-  <!-- Header -->
   <header>
     <div class="container">
       <nav class="navbar">
-        <div class="logo">Smoothies Naturales</div>
+        <div class="logo">Natural Power</div>
         <ul class="nav-links">
           <li><a href="index.html">Inicio</a></li>
-          <li><a href="productos.html" aria-current="page">Menú</a></li>
+          <li><a href="productos.html" class="active">Menú</a></li>
           <li><a href="#">Sobre Nosotros</a></li>
           <li><a href="#">Contacto</a></li>
           <li><a href="carrito.html">🛒 Carrito</a></li>
@@ -23,125 +74,244 @@
     </div>
   </header>
 
-  <!-- Productos -->
   <section class="smoothies-section">
-    <div class="container">
-      <h2 class="section-title">Nuestros Smoothies</h2>
-
-      <!-- Toolbar de catálogo: buscador (PASO 2) -->
-      <div class="catalog-toolbar">
-        <input
-          id="search"
-          type="search"
-          placeholder="Buscar smoothies por nombre o descripción..."
-          aria-label="Buscar smoothies"
-        />
-      </div>
-
-      <!-- Grid (ahora con id para el paso 3). Conserva tus tarjetas estáticas -->
-      <div class="smoothies-grid" id="smoothies-grid">
-
-        <!-- Smoothie 1 -->
-        <div class="smoothie-card">
-          <div class="smoothie-img" style="background-color: #ff6b6b;"></div>
-          <div class="smoothie-info">
-            <h3 class="smoothie-name">Berry Blast</h3>
-            <p class="smoothie-desc">Deliciosa mezcla de fresas, arándanos y frambuesas con yogurt natural</p>
-            <p class="smoothie-price">$4.990</p>
-            <button
-              class="add-to-cart"
-              data-id="berry-blast"
-              data-name="Berry Blast"
-              data-price="4990"
-            >Agregar al Carrito</button>
-          </div>
-        </div>
-
-        <!-- Smoothie 2 -->
-        <div class="smoothie-card">
-          <div class="smoothie-img" style="background-color: #ffd166;"></div>
-          <div class="smoothie-info">
-            <h3 class="smoothie-name">Tropical Paradise</h3>
-            <p class="smoothie-desc">Mango, piña y maracuyá con un toque de coco para transportarte al trópico</p>
-            <p class="smoothie-price">$5.490</p>
-            <button
-              class="add-to-cart"
-              data-id="tropical-paradise"
-              data-name="Tropical Paradise"
-              data-price="5490"
-            >Agregar al Carrito</button>
-          </div>
-        </div>
-
-        <!-- Smoothie 3 -->
-        <div class="smoothie-card">
-          <div class="smoothie-img" style="background-color: #06d6a0;"></div>
-          <div class="smoothie-info">
-            <h3 class="smoothie-name">Green Energy</h3>
-            <p class="smoothie-desc">Espinaca, plátano, kiwi y manzana verde para un boost de energía natural</p>
-            <p class="smoothie-price">$5.990</p>
-            <button
-              class="add-to-cart"
-              data-id="green-energy"
-              data-name="Green Energy"
-              data-price="5990"
-            >Agregar al Carrito</button>
-          </div>
-        </div>
-
-      </div>
+    <h2 class="section-title">Nuestros Smoothies</h2>
+    <div class="catalog-toolbar">
+      <input id="search" type="search" placeholder="Buscar smoothies por nombre o descripción..." />
+    </div>
+    <div class="smoothies-grid" id="smoothies-grid">
+      <p>Cargando smoothies...</p>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <p>&copy; 2025 Smoothies Naturales. Todos los derechos reservados.</p>
-    </div>
-  </footer>
-
-  <!-- Modal: Detalle de producto -->
-  <div id="product-detail" class="pd-hidden" aria-hidden="true" role="dialog" aria-modal="true">
-    <button id="pd-close" aria-label="Cerrar">✕</button>
-
-    <div class="pd-card">
-      <div class="pd-image-wrap">
-        <div id="pd-image" class="pd-image"></div>
+  <!-- Modal -->
+  <div id="modal-detalle" class="modal hidden" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <button id="modal-cerrar" class="modal-close" aria-label="Cerrar">&times;</button>
+      <div class="modal-left">
+        <div id="modal-imagen" class="modal-img"></div>
       </div>
+      <div class="modal-right">
+        <div>
+          <h2 id="modal-nombre"></h2>
+          <p><strong id="modal-precio"></strong><span id="modal-stock"></span></p>
+          <p id="modal-descripcion"></p>
 
-      <div class="pd-info">
-        <h2 id="pd-name"></h2>
-        <div class="pd-meta">
-          <span id="pd-price" class="pd-price"></span>
-          <span id="pd-stock" class="pd-stock-badge"></span>
-        </div>
-        <p id="pd-desc" class="pd-desc"></p>
-
-        <div class="pd-tabs" role="tablist" aria-label="Información del producto">
-          <button class="pd-tab is-active" data-tab="ingredientes" role="tab" aria-selected="true">Ingredientes</button>
-          <button class="pd-tab" data-tab="beneficios" role="tab" aria-selected="false">Beneficios</button>
-          <button class="pd-tab" data-tab="nutricion" role="tab" aria-selected="false">Información Nutricional</button>
-        </div>
-
-        <div class="pd-panels">
-          <div class="pd-panel" data-panel="ingredientes" role="tabpanel">
-            <ul id="pd-ingredientes" class="pd-list"></ul>
+          <div class="tabs">
+            <button class="tab active" data-tab="ingredientes">Ingredientes</button>
+            <button class="tab" data-tab="beneficios">Beneficios</button>
+            <button class="tab" data-tab="nutricion">Información Nutricional</button>
           </div>
-          <div class="pd-panel is-hidden" data-panel="beneficios" role="tabpanel">
-            <ul id="pd-beneficios" class="pd-list"></ul>
-          </div>
-          <div class="pd-panel is-hidden" data-panel="nutricion" role="tabpanel">
-            <table id="pd-nutricion" class="pd-table"></table>
-          </div>
+          <div class="tab-content" id="tab-contenido"></div>
         </div>
-
-        <button id="pd-add" class="add-to-cart">Agregar al Carrito</button>
+        <button id="modal-add" class="add-to-cart">Agregar al Carrito</button>
       </div>
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="js/main.js" defer></script>
+  <footer>
+    <div class="container"><p>&copy; 2025 Natural Power. Todos los derechos reservados.</p></div>
+  </footer>
+
+  <script>
+    // ==========================
+    // Config & helpers
+    // ==========================
+    const API_URL = "http://127.0.0.1:8000/api/products";
+    const CACHE_KEY = "cache_products_v1";
+    const CACHE_TS_KEY = "cache_products_v1_ts";
+    const CLP = new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0});
+
+    // Fallback (demo) siempre visible sin backend (stock=0)
+    const FALLBACK = [
+      { id: 1, slug: "berry-blast",       name: "Berry Blast",       description: "Fresas, arándanos, frambuesas", price: 4990, color: "#ff6b6b", stock: 0, active: true },
+      { id: 2, slug: "tropical-paradise", name: "Tropical Paradise", description: "Mango, piña, maracuyá",        price: 5490, color: "#ffd166", stock: 0, active: true },
+      { id: 3, slug: "green-energy",      name: "Green Energy",      description: "Espinaca, plátano, kiwi",       price: 5990, color: "#06d6a0", stock: 0, active: true },
+      { id: 4, slug: "choco-protein",     name: "Choco Protein",     description: "Cacao con whey y almendras",    price: 6290, color: "#8b5cf6", stock: 0, active: true },
+      { id: 5, slug: "matcha-boost",      name: "Matcha Boost",      description: "Matcha, plátano y coco",        price: 5790, color: "#22c55e", stock: 0, active: true },
+      { id: 6, slug: "piña-colada-fit",   name: "Piña Colada Fit",   description: "Piña y coco sin azúcar",        price: 5290, color: "#facc15", stock: 0, active: true },
+    ];
+
+    function withTimeout(promise, ms = 3500) {
+      return new Promise((resolve, reject) => {
+        const t = setTimeout(() => reject(new Error("timeout")), ms);
+        promise.then(v => { clearTimeout(t); resolve(v); })
+               .catch(e => { clearTimeout(t); reject(e); });
+      });
+    }
+    function saveCache(products){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify(products)); localStorage.setItem(CACHE_TS_KEY, String(Date.now())); }catch{} }
+    function loadCache(){ try{ const raw = localStorage.getItem(CACHE_KEY); return raw ? JSON.parse(raw) : null; }catch{ return null; } }
+
+    // Toast simple
+    function toast(msg, type='ok'){
+      const t = document.createElement('div');
+      t.className = 'toast' + (type==='error' ? ' error' : '');
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(()=>t.remove(), 2000);
+    }
+
+    // ==========================
+    // Data con fallback
+    // ==========================
+    async function obtenerProductos(){
+      try{
+        const res = await withTimeout(fetch(API_URL), 3500);
+        if(!res.ok) throw new Error("backend not ok");
+        const data = await res.json();
+        saveCache(data);
+        return { products: data, mode: "live" };
+      }catch(e){
+        const cache = loadCache();
+        if(cache && cache.length){
+          const demo = cache.map(p => ({...p, stock: 0}));
+          return { products: demo, mode: "cache" };
+        }
+        return { products: FALLBACK, mode: "fallback" };
+      }
+    }
+
+    function bannerHTML(mode){
+      if(mode === "live") return "";
+      const txt = mode === "cache"
+        ? "Mostrando últimos productos guardados (offline). Stock deshabilitado."
+        : "Backend no disponible. Modo demo: stock deshabilitado.";
+      return `<div class="fallback-banner" style="margin:12px auto; max-width:960px; padding:10px 14px; background:#fff3cd; color:#4d3a00; border:1px solid #ffe69c; border-radius:8px; font-size:.95rem; text-align:center;">${txt}</div>`;
+    }
+
+    // ==========================
+    // Render catálogo
+    // ==========================
+    function cardHTML(p){
+      const disabled = (p.stock ?? 0) <= 0;
+      return `
+        <div class="smoothie-card" data-id="${p.id}">
+          <div class="smoothie-color" data-role="open" style="background:${p.color}"></div>
+          <div class="smoothie-info">
+            <h3 class="smoothie-name" data-role="open">${p.name}</h3>
+            <p class="smoothie-desc">${p.description ?? ""}</p>
+            <p class="smoothie-price">${CLP.format(p.price)}</p>
+            <button class="add-to-cart" data-role="add" ${disabled ? "disabled" : ""}>
+              ${disabled ? "Sin stock" : "Agregar al Carrito"}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    async function cargarProductos(){
+      const grid = document.getElementById('smoothies-grid');
+      grid.innerHTML = `<p>Cargando smoothies...</p>`;
+
+      const { products, mode } = await obtenerProductos();
+
+      // Banner de estado
+      const section = document.querySelector(".smoothies-section");
+      section.querySelector(".fallback-banner")?.remove();
+      const banner = document.createElement("div");
+      banner.innerHTML = bannerHTML(mode);
+      if (banner.textContent.trim()) section.prepend(banner.firstChild);
+
+      grid.innerHTML = products.map(cardHTML).join("");
+
+      // Wire eventos por tarjeta
+      grid.querySelectorAll(".smoothie-card").forEach(card=>{
+        const id = Number(card.dataset.id);
+        // abrir modal
+        card.querySelectorAll('[data-role="open"]').forEach(el=>{
+          el.addEventListener('click', ev=>{
+            ev.stopPropagation();
+            const p = products.find(x=>x.id===id);
+            if(p) abrirModal(p);
+          });
+        });
+        // agregar carrito
+        card.querySelector('[data-role="add"]').addEventListener('click', ev=>{
+          ev.stopPropagation();
+          const p = products.find(x=>x.id===id);
+          if(!p) return;
+          if((p.stock ?? 0) <= 0) return; // deshabilitado en demo
+          agregarAlCarrito({ id:p.id, name:p.name, price:p.price });
+        });
+      });
+
+      // Buscador
+      const input = document.getElementById('search');
+      input.oninput = ()=>{
+        const q = input.value.toLowerCase();
+        grid.querySelectorAll('.smoothie-card').forEach(card=>{
+          const name = card.querySelector('.smoothie-name').textContent.toLowerCase();
+          const desc = card.querySelector('.smoothie-desc').textContent.toLowerCase();
+          card.style.display = (name.includes(q) || desc.includes(q)) ? '' : 'none';
+        });
+      };
+    }
+
+    // ==========================
+    // Modal
+    // ==========================
+    function abrirModal(p){
+      document.getElementById('modal-nombre').textContent = p.name;
+      document.getElementById('modal-precio').textContent = CLP.format(p.price);
+      document.getElementById('modal-descripcion').textContent = p.description ?? "";
+      const stockEl = document.getElementById('modal-stock');
+      stockEl.textContent = (p.stock ?? 0) > 0 ? ` Disponible: ${p.stock}` : ' Sin stock';
+      stockEl.style.background = (p.stock ?? 0) > 0 ? '#14532d' : '#7f1d1d';
+      document.getElementById('modal-imagen').style.background = p.color;
+
+      mostrarTab('ingredientes');
+
+      const btn = document.getElementById('modal-add');
+      btn.disabled = (p.stock ?? 0) <= 0;
+      btn.textContent = (p.stock ?? 0) > 0 ? 'Agregar al Carrito' : 'Sin stock';
+      btn.onclick = () => {
+        if((p.stock ?? 0) <= 0) return;
+        agregarAlCarrito({ id:p.id, name:p.name, price:p.price });
+        document.getElementById('modal-detalle').classList.add('hidden');
+      };
+
+      document.getElementById('modal-detalle').classList.remove('hidden');
+    }
+
+    document.getElementById('modal-cerrar').addEventListener('click', ()=>{
+      document.getElementById('modal-detalle').classList.add('hidden');
+    });
+
+    function mostrarTab(tab){
+      const contenido = document.getElementById('tab-contenido');
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+
+      if(tab==='ingredientes'){
+        contenido.innerHTML = `<ul style="padding-left:1.1rem; line-height:1.9">
+          <li>Mango</li><li>Piña</li><li>Maracuyá</li><li>Coco</li></ul>`;
+      }else if(tab==='beneficios'){
+        contenido.innerHTML = `<ul style="padding-left:1.1rem; line-height:1.9">
+          <li>Rico en antioxidantes</li><li>Favorece la digestión</li><li>Energía natural sostenida</li></ul>`;
+      }else{
+        contenido.innerHTML = `<p>Calorías: 210 kcal<br>Proteínas: 6 g<br>Carbohidratos: 25 g<br>Grasas: 2 g<br>Fibra: 4 g</p>`;
+      }
+    }
+    document.addEventListener('click', (e)=>{
+      const t = e.target.closest('.tab');
+      if(t) mostrarTab(t.dataset.tab);
+    });
+
+    // ==========================
+    // Carrito (localStorage)
+    // ==========================
+    function agregarAlCarrito(prod){
+      const key='carrito';
+      const carrito = JSON.parse(localStorage.getItem(key) || '[]');
+      const i = carrito.findIndex(p=>p.id===prod.id);
+      if(i>=0) carrito[i].qty += 1;
+      else carrito.push({...prod, qty:1});
+      localStorage.setItem(key, JSON.stringify(carrito));
+      toast(`✅ ${prod.name} agregado al carrito`);
+    }
+
+    // Start
+    document.addEventListener('DOMContentLoaded', cargarProductos);
+  </script>
 </body>
 </html>
-

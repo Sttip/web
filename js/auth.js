@@ -1,61 +1,58 @@
 // js/auth.js
-console.log('[auth.js] Cargado ✅');
+console.log('[auth.js] Backend mode ✅');
 
-/**
- * AUTENTICACIÓN (demo localStorage) — lista para migrar a backend.
- * - Reemplaza internamente por fetch() cuando tengas tu API.
- */
+const API_BASE = localStorage.getItem('API_BASE') || 'http://127.0.0.1:8000';
+const SESSION_KEY = 'session_user_v2';
 
-const USERS_KEY = 'users_v1';
-const SESSION_KEY = 'session_user_v1';
+// ---------- Helper de fetch ----------
+async function postJSON(path, body) {
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (res.ok) {
+      return { ok: true, data: json };
+    } else {
+      return { ok: false, error: json?.detail || json?.error || `HTTP ${res.status}` };
+    }
+  } catch (e) {
+    console.error('[auth] postJSON error:', e);
+    return { ok: false, error: 'No se pudo conectar al servidor.' };
+  }
+}
 
 const Auth = {
-  // ---------- Storage helpers ----------
-  _loadUsers() {
-    try { return JSON.parse(localStorage.getItem(USERS_KEY)) || []; }
-    catch { return []; }
-  },
-  _saveUsers(list) { localStorage.setItem(USERS_KEY, JSON.stringify(list)); },
   _normalizeEmail(email) { return (email || '').trim().toLowerCase(); },
 
-  // ---------- API simulada ----------
   async register({ email, password }) {
     const e = this._normalizeEmail(email);
     if (!e || !password) return { ok: false, error: 'Completa email y contraseña.' };
+    if (password.length > 72) return { ok: false, error: 'La contraseña no puede exceder 72 caracteres.' };
 
-    const users = this._loadUsers();
-    if (users.some(u => u.email === e)) {
-      return { ok: false, error: 'Ese correo ya está registrado.' };
-    }
-
-    // ⚠️ Demo: contraseña en claro. En backend real, usar hashing.
-    users.push({ email: e, password });
-    this._saveUsers(users);
-
-    return { ok: true };
+    const { ok, data, error } = await postJSON('/api/auth/register', { email: e, password });
+    if (!ok) return { ok: false, error };
+    if (!data?.ok) return { ok: false, error: data?.error || 'Registro no permitido.' };
+    return { ok: true, user: data.user };
   },
 
   async login({ email, password }) {
     const e = this._normalizeEmail(email);
-    const users = this._loadUsers();
-    const user = users.find(u => u.email === e);
+    if (!e || !password) return { ok: false, error: 'Completa email y contraseña.' };
 
-    if (!user) return { ok: false, error: 'No existe una cuenta con ese correo.' };
-    if (user.password !== password) return { ok: false, error: 'Contraseña incorrecta.' };
+    const { ok, data, error } = await postJSON('/api/auth/login', { email: e, password });
+    if (!ok) return { ok: false, error };
+    if (!data?.ok || !data?.user) return { ok: false, error: data?.error || 'Credenciales inválidas.' };
 
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ email: e }));
-    return { ok: true, user: { email: e } };
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ id: data.user.id, email: data.user.email, ts: Date.now() }));
+    return { ok: true, user: data.user };
   },
 
   async logout() { localStorage.removeItem(SESSION_KEY); return { ok: true }; },
-
-  currentUser() {
-    try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
-    catch { return null; }
-  },
-
+  currentUser() { try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; } },
   isLoggedIn() { return !!this.currentUser(); }
 };
 
-// Exponer en window por simplicidad
 window.Auth = Auth;

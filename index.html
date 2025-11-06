@@ -1,44 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smoothies Naturales - Inicio</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smoothies Naturales - Inicio</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .nav-user-badge{font-weight:600;color:#2e7d32}
+    .nav-sep{opacity:.35;margin:0 .35rem}
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <nav class="navbar">
-                <div class="logo">Smoothies Naturales</div>
-                <ul class="nav-links">
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="productos.html">Menú</a></li>
-                    <li><a href="login.html">Iniciar Sesión</a></li>
-                    <li><a href="#">Contacto</a></li>
-                    <li><a href="carrito.html">🛒 Carrito</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav class="navbar">
+        <div class="logo">Natural Power</div>
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">Inicio</a></li>
+          <li><a href="productos.html">Menú</a></li>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>Smoothies Naturales</h1>
-            <p>Deliciosos, saludables y llenos de energía para tu día</p>
-            <a href="productos.html" class="btn">Ver Menú</a>
-        </div>
-    </section>
+          <!-- slot de sesión -->
+          <li>
+            <span id="nav-user-email" class="nav-user-badge" style="display:none;"></span>
+            <span class="nav-sep" id="nav-sep" style="display:none;">·</span>
+            <a href="login.html" id="nav-login">Iniciar Sesión</a>
+            <a href="#" id="nav-logout" style="display:none;">Salir</a>
+          </li>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Smoothies Naturales. Todos los derechos reservados.</p>
-        </div>
-    </footer>
+          <li><a href="#">Contacto</a></li>
+          <li><a href="carrito.html">🛒 Carrito</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-    <script src="js/main.js"></script>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Natural Power</h1>
+      <p>Deliciosos, saludables y llenos de energía para tu día</p>
+      <a href="productos.html" class="btn">Ver Menú</a>
+    </div>
+  </section>
+
+  <!-- Sección destacada -->
+  <section class="about">
+    <div class="container">
+      <h2>Frescura y sabor en cada vaso 🥤</h2>
+      <p>
+        En <strong>Natural Power</strong> combinamos frutas frescas, ingredientes naturales y proteína vegetal
+        para ofrecerte el mejor impulso de energía sin azúcares añadidos. Disfruta de nuestras mezclas saludables
+        y siente la diferencia.
+      </p>
+    </div>
+  </section>
+
+  <!-- Beneficios -->
+  <section class="benefits">
+    <div class="container">
+      <h2>¿Por qué elegirnos?</h2>
+      <div class="benefits-grid">
+        <div class="benefit">
+          <h3>🍓 Ingredientes Naturales</h3>
+          <p>Usamos solo frutas frescas, sin conservantes ni colorantes.</p>
+        </div>
+        <div class="benefit">
+          <h3>💪 Salud y Energía</h3>
+          <p>Cada smoothie está pensado para darte vitalidad y bienestar.</p>
+        </div>
+        <div class="benefit">
+          <h3>🌍 Sostenibilidad</h3>
+          <p>Promovemos envases reciclables y producción responsable.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Final -->
+  <section class="cta">
+    <div class="container" style="text-align:center; margin-top:2rem;">
+      <h2>¿Listo para probar algo natural?</h2>
+      <a href="productos.html" class="btn">Explora nuestros Smoothies</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Smoothies Naturales. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Navbar: pinta sesión
+    function renderSessionUI(){
+      const u = Auth.currentUser();
+      const login = document.getElementById('nav-login');
+      const logout = document.getElementById('nav-logout');
+      const email = document.getElementById('nav-user-email');
+      const sep = document.getElementById('nav-sep');
+
+      if (u) {
+        email.textContent = u.email;
+        email.style.display = 'inline';
+        sep.style.display = 'inline';
+        login.style.display = 'none';
+        logout.style.display = 'inline';
+      } else {
+        email.style.display = 'none';
+        sep.style.display = 'none';
+        login.style.display = 'inline';
+        logout.style.display = 'none';
+      }
+    }
+
+    document.getElementById('nav-logout').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      await Auth.logout();
+      renderSessionUI();
+    });
+
+    document.addEventListener('DOMContentLoaded', renderSessionUI);
+  </script>
 </body>
 </html>

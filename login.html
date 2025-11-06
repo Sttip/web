@@ -3,27 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Iniciar Sesión</title>
+  <title>Iniciar Sesión - Smoothies Naturales</title>
   <link rel="stylesheet" href="css/style.css"/>
-  <script src="js/auth.js" defer></script>
+  <style>
+    body{background:#f8f9fa;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;display:flex;flex-direction:column;min-height:100vh;margin:0;color:#333}
+    header{background:#fff;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+    .navbar{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem}
+    .logo{font-weight:700;font-size:1.3rem;color:#2e7d32}
+    .nav-links{list-style:none;display:flex;gap:1.5rem;margin:0;padding:0}
+    .nav-links a{text-decoration:none;color:#333;font-weight:500}
+    .nav-links a.active{color:#2e7d32;font-weight:600}
+    .auth{flex:1;display:flex;justify-content:center;align-items:center;padding:2rem}
+    .auth-card{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);padding:2.5rem 3rem;width:100%;max-width:380px;text-align:center}
+    .auth-title{font-size:1.5rem;font-weight:800;margin-bottom:1.8rem;color:#222}
+    .auth-form{display:flex;flex-direction:column;gap:1rem}
+    .form-field{text-align:left}
+    label{display:block;font-weight:600;margin-bottom:.4rem;color:#444}
+    input{width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;outline:none;font-size:1rem;transition:border .2s ease}
+    input:focus{border-color:#2e7d32;box-shadow:0 0 0 1px #2e7d32}
+    .auth-submit{background:#2e7d32;color:#fff;border:none;border-radius:8px;padding:10px;font-weight:700;font-size:1rem;cursor:pointer;transition:background .2s ease}
+    .auth-submit:hover{background:#256b29}
+    .auth-alt{margin-top:1.2rem;font-size:.9rem;color:#555}
+    .auth-alt a{color:#2e7d32;font-weight:700;text-decoration:none}
+    .auth-alt a:hover{text-decoration:underline}
+    footer{background:#fff;text-align:center;padding:1rem 0;border-top:1px solid #eee;color:#555;font-size:.9rem}
+    .nav-user-badge{font-weight:600;color:#2e7d32}
+    .nav-sep{opacity:.35;margin:0 .35rem}
+  </style>
 </head>
 <body>
   <!-- Header -->
   <header>
     <div class="container">
       <nav class="navbar">
-        <div class="logo">Smoothies Naturales</div>
+        <div class="logo">Natural Power</div>
         <ul class="nav-links">
           <li><a href="index.html">Inicio</a></li>
           <li><a href="productos.html">Menú</a></li>
-          <li><a href="login.html">Iniciar Sesión</a></li>
+          <li>
+            <span id="nav-user-email" class="nav-user-badge" style="display:none;"></span>
+            <span class="nav-sep" id="nav-sep" style="display:none;">·</span>
+            <a href="login.html" id="nav-login" class="active">Iniciar Sesión</a>
+            <a href="#" id="nav-logout" style="display:none;">Salir</a>
+          </li>
           <li><a href="carrito.html">🛒 Carrito</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- Auth -->
+  <!-- Login -->
   <section class="auth">
     <div class="auth-card">
       <h2 class="auth-title">Iniciar Sesión</h2>
@@ -39,7 +68,7 @@
           <input type="password" id="password" name="password" placeholder="Tu contraseña" required />
         </div>
 
-        <button type="submit" class="btn btn-primary auth-submit">Entrar</button>
+        <button type="submit" class="auth-submit">Entrar</button>
       </form>
 
       <p class="auth-alt">
@@ -51,30 +80,56 @@
 
   <footer>
     <div class="container">
-      <p>&copy; 2025 Smoothies Naturales. Todos los derechos reservados.</p>
+      <p>&copy; 2025 Natural Power. Todos los derechos reservados.</p>
     </div>
   </footer>
 
+  <script src="js/auth.js"></script>
   <script>
+    // pinta navbar y redirige si ya estaba logueado
+    function renderSessionUI(){
+      const u = Auth.currentUser();
+      const login = document.getElementById('nav-login');
+      const logout = document.getElementById('nav-logout');
+      const emailBadge = document.getElementById('nav-user-email');
+      const sep = document.getElementById('nav-sep');
+
+      if (u) {
+        emailBadge.textContent = u.email;
+        emailBadge.style.display = 'inline';
+        sep.style.display = 'inline';
+        login.style.display = 'none';
+        logout.style.display = 'inline';
+        // Ya logueado -> a inicio
+        window.location.href = 'index.html';
+      } else {
+        emailBadge.style.display = 'none';
+        sep.style.display = 'none';
+        login.style.display = 'inline';
+        logout.style.display = 'none';
+      }
+    }
+
+    document.getElementById('nav-logout').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      await Auth.logout();
+      renderSessionUI();
+    });
+
     document.getElementById('form-login').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
-      const pass = document.getElementById('password').value.trim();
+      const password = document.getElementById('password').value.trim();
+      if (!email || !password) return alert('Completa correo y contraseña.');
 
-      if (!email || !pass) {
-        alert('Completa correo y contraseña.');
-        return;
-      }
-
-      const { ok, error, user } = await Auth.login({ email, password: pass });
-      if (!ok) {
-        alert(error || 'No fue posible iniciar sesión.');
-        return;
-      }
+      const { ok, user, error } = await Auth.login({ email, password });
+      if (!ok) return alert(error || 'No fue posible iniciar sesión.');
 
       alert('¡Bienvenido, ' + user.email + '!');
       window.location.href = 'index.html';
     });
+
+    document.addEventListener('DOMContentLoaded', renderSessionUI);
   </script>
 </body>
 </html>
