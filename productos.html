@@ -10,15 +10,47 @@
     header { background:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
     .navbar { display:flex; justify-content:space-between; align-items:center; padding:1rem 2rem; }
     .logo { font-weight:700; font-size:1.3rem; color:#2e7d32; }
-    .nav-links { list-style:none; display:flex; gap:1.5rem; margin:0; padding:0; }
+    .nav-links { list-style:none; display:flex; gap:1.5rem; margin:0; padding:0; align-items:center; }
     .nav-links a { text-decoration:none; color:#333; font-weight:500; }
     .nav-links a.active { color:#2e7d32; font-weight:600; }
+    .nav-user-badge{font-weight:600;color:#2e7d32;}
+    .nav-sep{opacity:.35;margin:0 .35rem;}
 
     .smoothies-section { padding:3rem 2rem; text-align:center; }
     .section-title { font-size:2rem; font-weight:800; margin-bottom:1rem; color:#222; }
-    .catalog-toolbar { margin:1rem 0 2rem; text-align:center; }
-    #search { width:60%; max-width:400px; padding:10px; border-radius:8px; border:1px solid #ccc; outline:none; }
-    #search:focus { border-color:#2e7d32; box-shadow:0 0 0 1px #2e7d32; }
+
+    .catalog-toolbar {
+      margin:1rem 0 2rem;
+      text-align:center;
+      display:flex;
+      justify-content:center;
+      gap:.75rem;
+      flex-wrap:wrap;
+    }
+    #search {
+      width:60%;
+      max-width:400px;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      outline:none;
+    }
+    #search:focus {
+      border-color:#2e7d32;
+      box-shadow:0 0 0 1px #2e7d32;
+    }
+    #filter-type{
+      padding:10px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      outline:none;
+      background:#fff;
+      min-width:180px;
+    }
+    #filter-type:focus{
+      border-color:#2e7d32;
+      box-shadow:0 0 0 1px #2e7d32;
+    }
 
     .smoothies-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.8rem; justify-items:center; }
     .smoothie-card { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); overflow:hidden; width:100%; max-width:300px; text-align:left; transition:transform .2s ease; }
@@ -66,8 +98,17 @@
         <ul class="nav-links">
           <li><a href="index.html">Inicio</a></li>
           <li><a href="productos.html" class="active">Menú</a></li>
-          <li><a href="#">Sobre Nosotros</a></li>
-          <li><a href="#">Contacto</a></li>
+
+          <!-- PERFIL: sólo se muestra logeado -->
+          <li><a href="perfil.html" id="nav-profile" style="display:none;">Perfil</a></li>
+
+          <li>
+            <span id="nav-user-email" class="nav-user-badge" style="display:none;"></span>
+            <span class="nav-sep" id="nav-sep" style="display:none;">·</span>
+            <a href="login.html" id="nav-login">Iniciar Sesión</a>
+            <a href="#" id="nav-logout" style="display:none;">Salir</a>
+          </li>
+
           <li><a href="carrito.html">🛒 Carrito</a></li>
         </ul>
       </nav>
@@ -77,7 +118,18 @@
   <section class="smoothies-section">
     <h2 class="section-title">Nuestros Smoothies</h2>
     <div class="catalog-toolbar">
-      <input id="search" type="search" placeholder="Buscar smoothies por nombre o descripción..." />
+      <input
+        id="search"
+        type="search"
+        placeholder="Buscar smoothies por nombre o descripción..."
+      />
+      <select id="filter-type">
+        <option value="all">Todos los tipos</option>
+        <option value="jugos_detox">Jugos Detox</option>
+        <option value="smoothies_frutales">Smoothies frutales</option>
+        <option value="smoothies_proteicos">Smoothies proteicos</option>
+        <option value="smoothies_verdes">Smoothies verdes</option>
+      </select>
     </div>
     <div class="smoothies-grid" id="smoothies-grid">
       <p>Cargando smoothies...</p>
@@ -113,7 +165,43 @@
     <div class="container"><p>&copy; 2025 Natural Power. Todos los derechos reservados.</p></div>
   </footer>
 
+  <!-- 👇 IMPORTANTE: auth.js primero -->
+  <script src="js/auth.js"></script>
+
   <script>
+    // ==========================
+    // Navbar: sesión
+    // ==========================
+    function renderSessionUI(){
+      const u = Auth.currentUser();
+      const login = document.getElementById('nav-login');
+      const logout = document.getElementById('nav-logout');
+      const emailBadge = document.getElementById('nav-user-email');
+      const sep = document.getElementById('nav-sep');
+      const profile = document.getElementById('nav-profile');
+
+      if (u) {
+        emailBadge.textContent = u.email;
+        emailBadge.style.display = 'inline';
+        sep.style.display = 'inline';
+        login.style.display = 'none';
+        logout.style.display = 'inline';
+        if (profile) profile.style.display = 'inline';
+      } else {
+        emailBadge.style.display = 'none';
+        sep.style.display = 'none';
+        login.style.display = 'inline';
+        logout.style.display = 'none';
+        if (profile) profile.style.display = 'none';
+      }
+    }
+
+    document.getElementById('nav-logout').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      await Auth.logout();
+      renderSessionUI();
+    });
+
     // ==========================
     // Config & helpers
     // ==========================
@@ -121,6 +209,11 @@
     const CACHE_KEY = "cache_products_v1";
     const CACHE_TS_KEY = "cache_products_v1_ts";
     const CLP = new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0});
+
+    // Guardamos todos los productos cargados
+    let ALL_PRODUCTS = [];
+    let MODE_PRODUCTS = "live";
+    let CURRENT_PRODUCT = null; // producto mostrado en el modal
 
     // Fallback (demo) siempre visible sin backend (stock=0)
     const FALLBACK = [
@@ -131,6 +224,210 @@
       { id: 5, slug: "matcha-boost",      name: "Matcha Boost",      description: "Matcha, plátano y coco",        price: 5790, color: "#22c55e", stock: 0, active: true },
       { id: 6, slug: "piña-colada-fit",   name: "Piña Colada Fit",   description: "Piña y coco sin azúcar",        price: 5290, color: "#facc15", stock: 0, active: true },
     ];
+
+    // ==========================
+    // Descripciones personalizadas (para el modal)
+    // ==========================
+    const DESCRIPCIONES_PERSONALIZADAS = {
+      "berry-blast": "Explosión de frutos rojos: frutillas, arándanos y frambuesas mezclados con yogur ligero para un smoothie fresco, dulce y lleno de antioxidantes.",
+      "berry blast": "Explosión de frutos rojos: frutillas, arándanos y frambuesas mezclados con yogur ligero para un smoothie fresco, dulce y lleno de antioxidantes.",
+
+      "tropical-paradise": "Una parada directa al trópico: mango maduro, piña jugosa y maracuyá natural. Refrescante, aromático y perfecto para los días calurosos.",
+      "tropical paradise": "Una parada directa al trópico: mango maduro, piña jugosa y maracuyá natural. Refrescante, aromático y perfecto para los días calurosos.",
+
+      "green-energy": "Combo verde energizante con espinaca fresca, plátano y kiwi. Ideal para comenzar el día con fibra, vitaminas y un empujón natural de energía.",
+      "green energy": "Combo verde energizante con espinaca fresca, plátano y kiwi. Ideal para comenzar el día con fibra, vitaminas y un empujón natural de energía.",
+
+      "choco-protein": "Smoothie cremoso de cacao real con proteína whey, leche vegetal y toque de almendras. Perfecto como post-entrenamiento o snack saciante.",
+      "choco protein": "Smoothie cremoso de cacao real con proteína whey, leche vegetal y toque de almendras. Perfecto como post-entrenamiento o snack saciante.",
+
+      "matcha-boost": "Shot de energía limpia con té matcha japonés, plátano y leche de coco. Suave, aromático y con cafeína natural de liberación sostenida.",
+      "matcha boost": "Shot de energía limpia con té matcha japonés, plátano y leche de coco. Suave, aromático y con cafeína natural de liberación sostenida.",
+
+      "piña-colada-fit": "Versión liviana de la clásica piña colada: piña natural y coco sin azúcar añadida. Refrescante, tropical y amigable con tus objetivos fitness.",
+      "piña colada fit": "Versión liviana de la clásica piña colada: piña natural y coco sin azúcar añadida. Refrescante, tropical y amigable con tus objetivos fitness.",
+
+      // Ejemplo para el que muestras en la captura:
+      "jugo detox naranja & jengibre": "Jugo cítrico con naranja, limón y jengibre fresco para activar tu metabolismo y despertar tu energía de forma natural."
+    };
+
+    function descripcionPersonalizada(p){
+      const slug = (p.slug || "").toLowerCase();
+      const name = (p.name || "").toLowerCase();
+
+      if (DESCRIPCIONES_PERSONALIZADAS[slug]) return DESCRIPCIONES_PERSONALIZADAS[slug];
+      if (DESCRIPCIONES_PERSONALIZADAS[name]) return DESCRIPCIONES_PERSONALIZADAS[name];
+
+      return p.description || "Smoothie natural preparado al momento con frutas frescas y sin azúcar añadida.";
+    }
+
+    // ==========================
+    // Detalles por smoothie (tabs únicos)
+    // ==========================
+    const DETALLES_SMOOTHIES = {
+      "berry-blast": {
+        ingredientes: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Frutillas frescas</li>
+            <li>Arándanos</li>
+            <li>Frambuesas</li>
+            <li>Yogur descremado</li>
+            <li>Hielo</li>
+          </ul>`,
+        beneficios: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Alto contenido de antioxidantes</li>
+            <li>Ayuda a proteger las células del estrés oxidativo</li>
+            <li>Ideal como snack dulce y liviano</li>
+          </ul>`,
+        nutricion: `
+          <p>Calorías aprox.: 190 kcal<br>
+          Proteínas: 7 g<br>
+          Carbohidratos: 30 g<br>
+          Grasas: 3 g<br>
+          Fibra: 5 g</p>`
+      },
+      "tropical-paradise": {
+        ingredientes: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Mango maduro</li>
+            <li>Piña</li>
+            <li>Maracuyá</li>
+            <li>Agua o leche vegetal</li>
+            <li>Hielo</li>
+          </ul>`,
+        beneficios: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Rico en vitamina C</li>
+            <li>Favorece la digestión gracias a las enzimas de la piña</li>
+            <li>Refrescante e hidratante</li>
+          </ul>`,
+        nutricion: `
+          <p>Calorías aprox.: 210 kcal<br>
+          Proteínas: 3 g<br>
+          Carbohidratos: 38 g<br>
+          Grasas: 2 g<br>
+          Fibra: 4 g</p>`
+      },
+      "green-energy": {
+        ingredientes: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Espinaca fresca</li>
+            <li>Plátano</li>
+            <li>Kiwi</li>
+            <li>Manzana verde</li>
+            <li>Agua o leche vegetal</li>
+          </ul>`,
+        beneficios: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Fuente de hierro y folatos</li>
+            <li>Apoya el sistema inmune</li>
+            <li>Aporta energía sostenida durante la mañana</li>
+          </ul>`,
+        nutricion: `
+          <p>Calorías aprox.: 180 kcal<br>
+          Proteínas: 5 g<br>
+          Carbohidratos: 32 g<br>
+          Grasas: 2 g<br>
+          Fibra: 6 g</p>`
+      },
+      "choco-protein": {
+        ingredientes: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Cacao puro</li>
+            <li>Proteína whey sabor chocolate</li>
+            <li>Leche vegetal</li>
+            <li>Almendras</li>
+            <li>Hielo</li>
+          </ul>`,
+        beneficios: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Alto aporte de proteínas para recuperación muscular</li>
+            <li>Satisface antojos de algo dulce sin azúcares añadidos</li>
+            <li>Ideal post-entrenamiento</li>
+          </ul>`,
+        nutricion: `
+          <p>Calorías aprox.: 230 kcal<br>
+          Proteínas: 20 g<br>
+          Carbohidratos: 15 g<br>
+          Grasas: 7 g<br>
+          Fibra: 4 g</p>`
+      },
+      "matcha-boost": {
+        ingredientes: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Té matcha japonés</li>
+            <li>Plátano</li>
+            <li>Leche de coco</li>
+            <li>Endulzante natural</li>
+            <li>Hielo</li>
+          </ul>`,
+        beneficios: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Fuente de cafeína natural de liberación lenta</li>
+            <li>Aporta concentración y foco</li>
+            <li>Rico en antioxidantes (catequinas)</li>
+          </ul>`,
+        nutricion: `
+          <p>Calorías aprox.: 200 kcal<br>
+          Proteínas: 5 g<br>
+          Carbohidratos: 28 g<br>
+          Grasas: 6 g<br>
+          Fibra: 3 g</p>`
+      },
+      "piña-colada-fit": {
+        ingredientes: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Piña natural</li>
+            <li>Leche de coco light</li>
+            <li>Agua</li>
+            <li>Hielo</li>
+          </ul>`,
+        beneficios: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Refrescante e hidratante</li>
+            <li>Menor contenido calórico que una piña colada tradicional</li>
+            <li>Ideal para acompañar planes de control de peso</li>
+          </ul>`,
+        nutricion: `
+          <p>Calorías aprox.: 170 kcal<br>
+          Proteínas: 2 g<br>
+          Carbohidratos: 30 g<br>
+          Grasas: 4 g<br>
+          Fibra: 3 g</p>`
+      },
+      // Ejemplo para "Jugo Detox Naranja & Jengibre"
+      "jugo detox naranja & jengibre": {
+        ingredientes: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Naranja fresca</li>
+            <li>Limón</li>
+            <li>Jengibre fresco</li>
+            <li>Agua filtrada</li>
+            <li>Hielo</li>
+          </ul>`,
+        beneficios: `
+          <ul style="padding-left:1.1rem; line-height:1.9">
+            <li>Ayuda a activar el metabolismo</li>
+            <li>Apoya la digestión y sensación de ligereza</li>
+            <li>Aporte alto de vitamina C</li>
+          </ul>`,
+        nutricion: `
+          <p>Calorías aprox.: 90 kcal<br>
+          Proteínas: 2 g<br>
+          Carbohidratos: 20 g<br>
+          Grasas: 0 g<br>
+          Fibra: 2 g</p>`
+      }
+    };
+
+    function detallesDeProducto(p){
+      const slug = (p.slug || "").toLowerCase();
+      const name = (p.name || "").toLowerCase();
+      if (DETALLES_SMOOTHIES[slug]) return DETALLES_SMOOTHIES[slug];
+      if (DETALLES_SMOOTHIES[name]) return DETALLES_SMOOTHIES[name];
+      return null;
+    }
 
     function withTimeout(promise, ms = 3500) {
       return new Promise((resolve, reject) => {
@@ -179,17 +476,43 @@
       return `<div class="fallback-banner" style="margin:12px auto; max-width:960px; padding:10px 14px; background:#fff3cd; color:#4d3a00; border:1px solid #ffe69c; border-radius:8px; font-size:.95rem; text-align:center;">${txt}</div>`;
     }
 
+    function renderBanner(mode){
+      const section = document.querySelector(".smoothies-section");
+      section.querySelector(".fallback-banner")?.remove();
+      const html = bannerHTML(mode);
+      if (!html) return;
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = html;
+      section.prepend(wrapper.firstChild);
+    }
+
     // ==========================
-    // Render catálogo
+    // Filtro por tipo
+    // ==========================
+    function tipoProducto(p){
+      const slug = (p.slug || "").toLowerCase();
+      const nombre = (p.name || "").toLowerCase();
+
+      if (slug.includes("detox") || nombre.includes("detox")) return "jugos_detox";
+      if (slug.includes("proteico") || slug.includes("protein") || nombre.includes("proteico")) return "smoothies_proteicos";
+      if (slug.includes("verde") || slug.includes("green") || nombre.includes("verde") || nombre.includes("green")) return "smoothies_verdes";
+
+      // resto = frutales
+      return "smoothies_frutales";
+    }
+
+    // ==========================
+    // Cards (descripción corta)
     // ==========================
     function cardHTML(p){
       const disabled = (p.stock ?? 0) <= 0;
+      const desc = p.description || ""; // breve, como antes
       return `
         <div class="smoothie-card" data-id="${p.id}">
           <div class="smoothie-color" data-role="open" style="background:${p.color}"></div>
           <div class="smoothie-info">
             <h3 class="smoothie-name" data-role="open">${p.name}</h3>
-            <p class="smoothie-desc">${p.description ?? ""}</p>
+            <p class="smoothie-desc">${desc}</p>
             <p class="smoothie-price">${CLP.format(p.price)}</p>
             <button class="add-to-cart" data-role="add" ${disabled ? "disabled" : ""}>
               ${disabled ? "Sin stock" : "Agregar al Carrito"}
@@ -199,61 +522,93 @@
       `;
     }
 
-    async function cargarProductos(){
+    function renderGrid(products){
       const grid = document.getElementById('smoothies-grid');
-      grid.innerHTML = `<p>Cargando smoothies...</p>`;
 
-      const { products, mode } = await obtenerProductos();
-
-      // Banner de estado
-      const section = document.querySelector(".smoothies-section");
-      section.querySelector(".fallback-banner")?.remove();
-      const banner = document.createElement("div");
-      banner.innerHTML = bannerHTML(mode);
-      if (banner.textContent.trim()) section.prepend(banner.firstChild);
+      if (!products || !products.length) {
+        grid.innerHTML = `<p>No se encontraron productos para los filtros aplicados.</p>`;
+        return;
+      }
 
       grid.innerHTML = products.map(cardHTML).join("");
 
       // Wire eventos por tarjeta
       grid.querySelectorAll(".smoothie-card").forEach(card=>{
         const id = Number(card.dataset.id);
-        // abrir modal
+
         card.querySelectorAll('[data-role="open"]').forEach(el=>{
           el.addEventListener('click', ev=>{
             ev.stopPropagation();
-            const p = products.find(x=>x.id===id);
+            const p = ALL_PRODUCTS.find(x=>x.id===id);
             if(p) abrirModal(p);
           });
         });
-        // agregar carrito
-        card.querySelector('[data-role="add"]').addEventListener('click', ev=>{
-          ev.stopPropagation();
-          const p = products.find(x=>x.id===id);
-          if(!p) return;
-          if((p.stock ?? 0) <= 0) return; // deshabilitado en demo
-          agregarAlCarrito({ id:p.id, name:p.name, price:p.price });
-        });
+
+        const btnAdd = card.querySelector('[data-role="add"]');
+        if (btnAdd) {
+          btnAdd.addEventListener('click', ev=>{
+            ev.stopPropagation();
+            const p = ALL_PRODUCTS.find(x=>x.id===id);
+            if(!p) return;
+            if((p.stock ?? 0) <= 0) return; // deshabilitado en demo
+            agregarAlCarrito({ id:p.id, name:p.name, price:p.price });
+          });
+        }
+      });
+    }
+
+    function aplicarFiltros(){
+      if (!ALL_PRODUCTS || !ALL_PRODUCTS.length) return;
+
+      const input = document.getElementById('search');
+      const typeSel = document.getElementById('filter-type');
+
+      const texto = (input.value || "").toLowerCase().trim();
+      const tipo = typeSel.value;
+
+      const filtrados = ALL_PRODUCTS.filter(p=>{
+        const name = (p.name || "").toLowerCase();
+        const desc = descripcionPersonalizada(p).toLowerCase(); // búsqueda sobre texto largo
+
+        const coincideTexto =
+          !texto ||
+          name.includes(texto) ||
+          desc.includes(texto);
+
+        const coincideTipo =
+          tipo === "all" ||
+          tipoProducto(p) === tipo;
+
+        return coincideTexto && coincideTipo;
       });
 
-      // Buscador
-      const input = document.getElementById('search');
-      input.oninput = ()=>{
-        const q = input.value.toLowerCase();
-        grid.querySelectorAll('.smoothie-card').forEach(card=>{
-          const name = card.querySelector('.smoothie-name').textContent.toLowerCase();
-          const desc = card.querySelector('.smoothie-desc').textContent.toLowerCase();
-          card.style.display = (name.includes(q) || desc.includes(q)) ? '' : 'none';
-        });
-      };
+      renderGrid(filtrados);
+    }
+
+    // ==========================
+    // Cargar catálogo
+    // ==========================
+    async function cargarProductos(){
+      const grid = document.getElementById('smoothies-grid');
+      grid.innerHTML = `<p>Cargando smoothies...</p>`;
+
+      const { products, mode } = await obtenerProductos();
+      ALL_PRODUCTS = products;
+      MODE_PRODUCTS = mode;
+
+      renderBanner(mode);
+      aplicarFiltros(); // usa ALL_PRODUCTS + filtros actuales
     }
 
     // ==========================
     // Modal
     // ==========================
     function abrirModal(p){
+      CURRENT_PRODUCT = p; // guardamos para las tabs
+
       document.getElementById('modal-nombre').textContent = p.name;
       document.getElementById('modal-precio').textContent = CLP.format(p.price);
-      document.getElementById('modal-descripcion').textContent = p.description ?? "";
+      document.getElementById('modal-descripcion').textContent = descripcionPersonalizada(p);
       const stockEl = document.getElementById('modal-stock');
       stockEl.textContent = (p.stock ?? 0) > 0 ? ` Disponible: ${p.stock}` : ' Sin stock';
       stockEl.style.background = (p.stock ?? 0) > 0 ? '#14532d' : '#7f1d1d';
@@ -275,6 +630,7 @@
 
     document.getElementById('modal-cerrar').addEventListener('click', ()=>{
       document.getElementById('modal-detalle').classList.add('hidden');
+      CURRENT_PRODUCT = null;
     });
 
     function mostrarTab(tab){
@@ -282,16 +638,36 @@
       document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
       document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
 
+      const p = CURRENT_PRODUCT;
+      const detalles = p ? detallesDeProducto(p) : null;
+
+      if(detalles && detalles[tab]){
+        contenido.innerHTML = detalles[tab];
+        return;
+      }
+
+      // Fallback genérico si no definimos ese smoothie aún
       if(tab==='ingredientes'){
         contenido.innerHTML = `<ul style="padding-left:1.1rem; line-height:1.9">
-          <li>Mango</li><li>Piña</li><li>Maracuyá</li><li>Coco</li></ul>`;
+          <li>Fruta fresca de temporada</li>
+          <li>Líquido base (agua o leche vegetal)</li>
+          <li>Hielo</li>
+        </ul>`;
       }else if(tab==='beneficios'){
         contenido.innerHTML = `<ul style="padding-left:1.1rem; line-height:1.9">
-          <li>Rico en antioxidantes</li><li>Favorece la digestión</li><li>Energía natural sostenida</li></ul>`;
+          <li>Aporte natural de vitaminas y minerales</li>
+          <li>Ideal como snack o desayuno ligero</li>
+          <li>Preparado al momento</li>
+        </ul>`;
       }else{
-        contenido.innerHTML = `<p>Calorías: 210 kcal<br>Proteínas: 6 g<br>Carbohidratos: 25 g<br>Grasas: 2 g<br>Fibra: 4 g</p>`;
+        contenido.innerHTML = `<p>Calorías aprox.: 180–220 kcal<br>
+          Proteínas: 2–7 g<br>
+          Carbohidratos: 25–40 g<br>
+          Grasas: 1–7 g<br>
+          Fibra: 3–6 g</p>`;
       }
     }
+
     document.addEventListener('click', (e)=>{
       const t = e.target.closest('.tab');
       if(t) mostrarTab(t.dataset.tab);
@@ -310,8 +686,17 @@
       toast(`✅ ${prod.name} agregado al carrito`);
     }
 
+    // ==========================
     // Start
-    document.addEventListener('DOMContentLoaded', cargarProductos);
+    // ==========================
+    document.addEventListener('DOMContentLoaded', ()=>{
+      renderSessionUI();
+      const input = document.getElementById('search');
+      const typeSel = document.getElementById('filter-type');
+      input.addEventListener('input', aplicarFiltros);
+      typeSel.addEventListener('change', aplicarFiltros);
+      cargarProductos();
+    });
   </script>
 </body>
 </html>

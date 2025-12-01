@@ -11,6 +11,7 @@
   </style>
 </head>
 <body>
+
   <!-- Header -->
   <header>
     <div class="container">
@@ -20,7 +21,8 @@
           <li><a href="index.html" class="active">Inicio</a></li>
           <li><a href="productos.html">Menú</a></li>
 
-          <!-- slot de sesión -->
+          <li><a href="perfil.html" id="nav-profile" style="display:none;">Perfil</a></li>
+
           <li>
             <span id="nav-user-email" class="nav-user-badge" style="display:none;"></span>
             <span class="nav-sep" id="nav-sep" style="display:none;">·</span>
@@ -28,39 +30,76 @@
             <a href="#" id="nav-logout" style="display:none;">Salir</a>
           </li>
 
-          <li><a href="#">Contacto</a></li>
           <li><a href="carrito.html">🛒 Carrito</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="container">
-      <h1>Natural Power</h1>
-      <p>Deliciosos, saludables y llenos de energía para tu día</p>
-      <a href="productos.html" class="btn">Ver Menú</a>
+  <!-- HERO -->
+  <section class="hero home-hero home-hero-center">
+    <div class="container home-hero-center-content">
+      <p class="home-hero-kicker">Smoothies naturales · listos para llevar</p>
+      <h1 class="home-hero-title">Natural Power</h1>
+      <p class="home-hero-subtitle">
+        Deliciosos, saludables y llenos de energía para tu día.
+        Elige tus combinaciones favoritas y recíbelas siempre frescas y naturales.
+      </p>
+
+      <div class="home-hero-actions home-hero-actions-center">
+        <a href="productos.html" class="btn">Ver Menú</a>
+        <a href="#beneficios" class="btn home-btn-outline">Por qué elegirnos</a>
+      </div>
+
+      <div class="home-hero-stats home-hero-stats-center">
+        <div class="home-hero-stat">
+          <strong>20+</strong>
+          <span>Sabores disponibles</span>
+        </div>
+        <div class="home-hero-stat">
+          <strong>100%</strong>
+          <span>Fruta real</span>
+        </div>
+        <div class="home-hero-stat">
+          <strong>4.8★</strong>
+          <span>Clientes felices</span>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Sección destacada -->
-  <section class="about">
-    <div class="container">
-      <h2>Frescura y sabor en cada vaso 🥤</h2>
-      <p>
-        En <strong>Natural Power</strong> combinamos frutas frescas, ingredientes naturales y proteína vegetal
-        para ofrecerte el mejor impulso de energía sin azúcares añadidos. Disfruta de nuestras mezclas saludables
-        y siente la diferencia.
-      </p>
+  <section class="about home-about">
+    <div class="container home-about-layout">
+      <div>
+        <h2>Frescura y sabor en cada vaso 🥤</h2>
+        <p>
+          En <strong>Natural Power</strong> combinamos frutas frescas, ingredientes naturales y proteína vegetal
+          para ofrecerte el mejor impulso de energía sin azúcares añadidos.
+        </p>
+        <p>
+          Cada smoothie está pensado para acompañarte en tu día: antes de entrenar, en la oficina
+          o como snack saludable.
+        </p>
+      </div>
+
+      <div class="home-about-box">
+        <h3>Hechos al momento</h3>
+        <ul>
+          <li>✔ Sin azúcares añadidos</li>
+          <li>✔ Opciones con y sin proteína</li>
+          <li>✔ Alternativas veganas y sin lactosa</li>
+          <li>✔ Perfectos para llevar o disfrutar en casa</li>
+        </ul>
+      </div>
     </div>
   </section>
 
   <!-- Beneficios -->
-  <section class="benefits">
+  <section class="benefits home-benefits" id="beneficios">
     <div class="container">
-      <h2>¿Por qué elegirnos?</h2>
-      <div class="benefits-grid">
+      <h2 class="home-benefits-title">¿Por qué elegirnos?</h2>
+      <div class="benefits-grid home-benefits-grid">
         <div class="benefit">
           <h3>🍓 Ingredientes Naturales</h3>
           <p>Usamos solo frutas frescas, sin conservantes ni colorantes.</p>
@@ -71,21 +110,21 @@
         </div>
         <div class="benefit">
           <h3>🌍 Sostenibilidad</h3>
-          <p>Promovemos envases reciclables y producción responsable.</p>
+          <p>Promovemos envases reciclables y producción responsable</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA Final -->
-  <section class="cta">
-    <div class="container" style="text-align:center; margin-top:2rem;">
+  <!-- CTA -->
+  <section class="cta home-cta">
+    <div class="container">
       <h2>¿Listo para probar algo natural?</h2>
+      <p>Explora nuestro menú y elige tu smoothie favorito.</p>
       <a href="productos.html" class="btn">Explora nuestros Smoothies</a>
     </div>
   </section>
 
-  <!-- Footer -->
   <footer>
     <div class="container">
       <p>&copy; 2025 Smoothies Naturales. Todos los derechos reservados.</p>
@@ -94,13 +133,13 @@
 
   <script src="js/auth.js"></script>
   <script>
-    // Navbar: pinta sesión
     function renderSessionUI(){
       const u = Auth.currentUser();
       const login = document.getElementById('nav-login');
       const logout = document.getElementById('nav-logout');
       const email = document.getElementById('nav-user-email');
       const sep = document.getElementById('nav-sep');
+      const profile = document.getElementById('nav-profile');
 
       if (u) {
         email.textContent = u.email;
@@ -108,11 +147,13 @@
         sep.style.display = 'inline';
         login.style.display = 'none';
         logout.style.display = 'inline';
+        if (profile) profile.style.display = 'inline';
       } else {
         email.style.display = 'none';
         sep.style.display = 'none';
         login.style.display = 'inline';
         logout.style.display = 'none';
+        if (profile) profile.style.display = 'none';
       }
     }
 

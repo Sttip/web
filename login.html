@@ -40,6 +40,10 @@
         <ul class="nav-links">
           <li><a href="index.html">Inicio</a></li>
           <li><a href="productos.html">Menú</a></li>
+
+          <!-- PERFIL: sólo se muestra logeado -->
+          <li><a href="perfil.html" id="nav-profile" style="display:none;">Perfil</a></li>
+
           <li>
             <span id="nav-user-email" class="nav-user-badge" style="display:none;"></span>
             <span class="nav-sep" id="nav-sep" style="display:none;">·</span>
@@ -93,6 +97,7 @@
       const logout = document.getElementById('nav-logout');
       const emailBadge = document.getElementById('nav-user-email');
       const sep = document.getElementById('nav-sep');
+      const profile = document.getElementById('nav-profile');
 
       if (u) {
         emailBadge.textContent = u.email;
@@ -100,6 +105,7 @@
         sep.style.display = 'inline';
         login.style.display = 'none';
         logout.style.display = 'inline';
+        if (profile) profile.style.display = 'inline';
         // Ya logueado -> a inicio
         window.location.href = 'index.html';
       } else {
@@ -107,6 +113,7 @@
         sep.style.display = 'none';
         login.style.display = 'inline';
         logout.style.display = 'none';
+        if (profile) profile.style.display = 'none';
       }
     }
 

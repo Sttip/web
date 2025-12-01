@@ -488,3 +488,269 @@ footer p {
   .hero h1 { font-size: 36px; }
   .hero p { font-size: 18px; }
 }
+
+
+/* =========================================================
+   INICIO (HOME) - MAQUETADO ESPECÍFICO PARA index.html
+========================================================= */
+
+.home-hero {
+  text-align: left;
+  padding: 80px 0;
+}
+
+.home-hero-layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.home-hero-copy {
+  max-width: 520px;
+}
+
+.home-hero-kicker {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #c8e6c9;
+  margin-bottom: 8px;
+}
+
+.home-hero-title {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.home-hero-subtitle {
+  font-size: 16px;
+  max-width: 480px;
+  margin-bottom: 22px;
+}
+
+.home-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.home-btn-outline {
+  background-color: transparent;
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  padding-inline: 26px;
+}
+
+.home-btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.home-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.home-hero-stat strong {
+  font-size: 20px;
+}
+
+.home-hero-stat span {
+  display: block;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* Tarjeta lateral */
+
+.home-hero-card {
+  background-color: #ffffff;
+  color: #333;
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  max-width: 330px;
+  width: 100%;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+}
+
+.home-hero-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.home-hero-card-header h3 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.home-hero-card-tag {
+  font-size: 11px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-weight: 600;
+}
+
+.home-hero-card-list li {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.home-hero-product-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+
+.home-hero-product-emoji {
+  font-size: 20px;
+}
+
+.home-hero-product-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.home-hero-product-desc {
+  font-size: 12px;
+  color: #666;
+}
+
+.home-hero-product-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.home-hero-card-link {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+/* About */
+
+.home-about {
+  padding: 40px 0 20px;
+}
+
+.home-about-layout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.home-about p {
+  margin-top: 10px;
+}
+
+.home-about-box {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 18px 20px;
+  min-width: 260px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+}
+
+.home-about-box h3 {
+  margin-bottom: 10px;
+}
+
+.home-about-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.home-about-box li {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+/* Beneficios */
+
+.home-benefits {
+  padding: 30px 0 40px;
+}
+
+.home-benefits-title {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.home-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+.home-benefits-grid .benefit {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+}
+
+/* CTA */
+
+.home-cta {
+  padding: 32px 0 40px;
+  text-align: center;
+}
+
+.home-cta p {
+  margin: 10px 0 18px;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .home-hero-layout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-hero {
+    padding: 60px 0;
+  }
+
+  .home-about-layout {
+    flex-direction: column;
+  }
+
+  .home-hero-card {
+    max-width: 100%;
+  }
+}
+
+/* ===============================
+   HOME: HERO CENTRADO
+================================ */
+
+.home-hero-center {
+  text-align: center;
+}
+
+.home-hero-center-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.home-hero-actions-center {
+  justify-content: center;
+}
+
+.home-hero-stats-center {
+  justify-content: center;
+  gap: 40px;
+}
