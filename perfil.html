@@ -112,37 +112,106 @@
     .modal.hidden{display:none;}
     .modal-content{
       background:#fff;
-      border-radius:14px;
-      padding:1.5rem 1.8rem;
-      max-width:600px;
+      border-radius:10px;
+      padding:1.4rem 1.6rem 1.2rem;
+      max-width:460px;
       width:90%;
       box-shadow:0 10px 35px rgba(0,0,0,.35);
+      border:1px solid #e5e7eb;
+      font-size:.85rem;
     }
+
+    /* Estilo tipo boleta */
     .modal-header{
       display:flex;
       justify-content:space-between;
-      align-items:center;
-      margin-bottom:.5rem;
+      align-items:flex-start;
+      margin-bottom:.45rem;
+      border-bottom:1px dashed #d4d4d8;
+      padding-bottom:.45rem;
     }
+    .boleta-header{
+      text-align:center;
+      width:100%;
+      padding-right:1.5rem;
+    }
+    .boleta-brand{
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-size:.8rem;
+    }
+    .boleta-subtitle{
+      font-size:.78rem;
+      color:#4b5563;
+      margin-top:.1rem;
+    }
+    .boleta-num{
+      margin:.25rem 0 0;
+      font-size:.9rem;
+      font-weight:600;
+    }
+
     .modal-close{
       border:none;
       background:none;
       font-size:1.4rem;
       cursor:pointer;
+      line-height:1;
+      padding-left:.5rem;
     }
-    .modal-meta{
-      font-size:.9rem;
-      color:#555;
-      margin-bottom:.25rem;
-    }
-    .modal-address{
-      font-size:.9rem;
-      color:#555;
+
+    .boleta-meta-grid{
+      margin-top:.35rem;
+      border-bottom:1px dashed #d4d4d8;
+      padding-bottom:.45rem;
       margin-bottom:.45rem;
+    }
+    .modal-meta,
+    .modal-address{
+      font-size:.8rem;
+      color:#4b5563;
+      margin:0 0 .2rem;
+    }
+
+    .boleta-total-wrapper{
+      display:flex;
+      justify-content:flex-end;
+      border-bottom:1px dashed #d4d4d8;
+      padding-bottom:.4rem;
+      margin-bottom:.4rem;
     }
     .modal-total{
       font-weight:600;
-      margin-bottom:.6rem;
+      font-size:.9rem;
+      margin:0;
+    }
+
+    .boleta-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:.8rem;
+    }
+    .boleta-table th,
+    .boleta-table td{
+      padding:4px 6px;
+      border-bottom:1px solid #eee;
+    }
+    .boleta-table thead th{
+      background:#f9fafb;
+      border-bottom:1px solid #e5e7eb;
+    }
+    .boleta-table td:nth-child(2),
+    .boleta-table td:nth-child(3),
+    .boleta-table td:nth-child(4){
+      text-align:right;
+    }
+
+    .boleta-footer{
+      text-align:center;
+      font-size:.7rem;
+      color:#6b7280;
+      margin-top:.4rem;
     }
   </style>
 </head>
@@ -237,14 +306,24 @@
 <div id="modal" class="modal hidden">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 id="modal-title">Pedido</h3>
+      <div class="boleta-header">
+        <div class="boleta-brand">Natural Power</div>
+        <div class="boleta-subtitle">Boleta electrónica</div>
+        <h3 id="modal-title" class="boleta-num">Pedido</h3>
+      </div>
       <button id="modal-close" class="modal-close">&times;</button>
     </div>
-    <p id="modal-meta" class="modal-meta"></p>
-    <p id="modal-address" class="modal-address"></p>
-    <p id="modal-total" class="modal-total"></p>
 
-    <table>
+    <div class="boleta-meta-grid">
+      <p id="modal-meta" class="modal-meta"></p>
+      <p id="modal-address" class="modal-address"></p>
+    </div>
+
+    <div class="boleta-total-wrapper">
+      <p id="modal-total" class="modal-total"></p>
+    </div>
+
+    <table class="boleta-table">
       <thead>
       <tr>
         <th>Producto</th>
@@ -257,6 +336,10 @@
       <tr><td colspan="4">Cargando...</td></tr>
       </tbody>
     </table>
+
+    <p class="boleta-footer">
+      Documento sin validez tributaria · Natural Power
+    </p>
   </div>
 </div>
 
@@ -264,6 +347,9 @@
 <script>
   const CLP = new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0});
   const API = window.API_BASE || (localStorage.getItem('API_BASE') || 'http://127.0.0.1:8000');
+
+  // Guardaremos aquí los datos del usuario para usarlos en la boleta
+  window.__USER_PROFILE = null;
 
   // ---------- Navbar ----------
   function renderSessionUI(){
@@ -311,7 +397,13 @@
       const res = await fetch(`${API}/api/auth/user/${u.id}`);
       if (!res.ok) return;
       const data = await res.json();
-      if (data && data.shipping_address) textarea.value = data.shipping_address;
+
+      // guardamos perfil globalmente
+      window.__USER_PROFILE = data || null;
+
+      if (data && data.shipping_address) {
+        textarea.value = data.shipping_address;
+      }
     } catch (err) {
       console.error("No se pudo cargar dirección:", err);
       if (status) status.textContent = "No se pudo cargar la dirección.";
@@ -340,6 +432,10 @@
         body: JSON.stringify({ shipping_address }),
       });
       if (!res.ok) throw new Error("Error HTTP " + res.status);
+
+      // actualizamos el perfil global en memoria
+      if (!window.__USER_PROFILE) window.__USER_PROFILE = {};
+      window.__USER_PROFILE.shipping_address = shipping_address;
 
       if (status) {
         status.textContent = "Dirección guardada ✅";
@@ -411,9 +507,21 @@
     document.getElementById('modal-meta').textContent =
       `Realizado por ${p.email} el ${p.created_at ? new Date(p.created_at).toLocaleString() : '-'}`;
 
-    const dir = p.shipping_address && p.shipping_address.trim()
-      ? p.shipping_address
-      : 'Sin dirección registrada para este pedido.';
+    // 1) Dirección del pedido (si el backend la trae)
+    let dir = (p.shipping_address || "").trim();
+
+    // 2) Si no viene en el pedido, usamos la del perfil
+    if (!dir && window.__USER_PROFILE && window.__USER_PROFILE.shipping_address) {
+      const perfilDir = window.__USER_PROFILE.shipping_address.trim();
+      if (perfilDir) {
+        dir = perfilDir + " (dirección de perfil)";
+      }
+    }
+
+    // 3) Si tampoco hay, mostramos mensaje genérico
+    if (!dir) {
+      dir = 'Sin dirección registrada para este pedido.';
+    }
 
     document.getElementById('modal-address').textContent = `Dirección de envío: ${dir}`;
     document.getElementById('modal-total').textContent = `Total: ${CLP.format(p.total)}`;
